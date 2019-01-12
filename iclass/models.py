@@ -13,22 +13,19 @@ class Permission:
 
 
 class User(UserMixin, db.Model):
-    __tablename__ = 'users'
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), doc="姓名")
     identification = db.Column(db.String(64), primary_key=True, doc="学号，员工编号")
     role = db.Column(db.String(64), unique=True, index=True, doc="学生：1，老师：2")
-    role_id = db.Column(db.Integer, doc='roles.id')
-    username = db.Column(db.String(64), unique=True, index=True)
+    college = db.Column(db.String(64), doc="所属学院")
     phone = db.Column(db.String(64), unique=True, index=True)
     email = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
     confirmed = db.Column(db.Boolean, default=False)
-    name = db.Column(db.String(64))
-    location = db.Column(db.String(64))
-    about_me = db.Column(db.Text())
-    member_since = db.Column(db.DateTime(), default=datetime.utcnow)
-    last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
-    avatar_hash = db.Column(db.String(32))
+    member_since = db.Column(db.DateTime(), default=datetime.utcnow, doc="注册时间")
+    last_seen = db.Column(db.DateTime(), default=datetime.now, doc="上次登录时间")
+    avatar_hash = db.Column(db.String(32), doc="头像")
 
     @property
     def password(self):
@@ -42,7 +39,7 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<User {}>'.format(self.identification)
 
 
 class AnonymousUser(AnonymousUserMixin):
@@ -56,9 +53,9 @@ class AnonymousUser(AnonymousUserMixin):
 class ClassRoom(db.Model):
     __tablename__ = 'class_room'
     id = db.Column(db.Integer, primary_key=True)
-    floor = db.Column(db.Integer, doc="几号楼")
-    college = db.Column(db.String(64), doc="哪个学院")
     classroom_number = db.Column(db.String(20), doc="教室号")
+    floor = db.Column(db.String(20), doc="楼号")
+    college = db.Column(db.String(64), doc="所属学院")
 
 
 class ApplicationInfo(db.Model):
@@ -69,10 +66,13 @@ class ApplicationInfo(db.Model):
     floor = db.Column(db.Integer, doc="几号楼")
     application_timestamp = db.Column(db.DateTime, index=True, default=datetime.now())  # 日期
     period = db.Column(db.Integer, doc=" 时间段，上中下午")
-    purpose = db.Column(db.TEXT, doc="申请 目的，用途")
+    purpose = db.Column(db.TEXT, doc="申请目的、用途")
     category = db.Column(db.String(20), doc="申请活动的类别")
     status = db.Column(db.SMALLINT, default=0, doc="状态，是否处理;审批通过，拒绝等")
-    college = db.Column(db.String(64), doc="哪个学院")
+    college = db.Column(db.String(64), doc="所属学院")
     classroom_number = db.Column(db.String(20), doc="教室号")
     update_time = db.Column(db.DateTime, index=True, default=datetime.now(), doc="日期")
     create_time = db.Column(db.DateTime, index=True, default=datetime.now(), doc="日期")
+
+    def __repr__(self):
+        return '<ApplicationInfo {}>'.format(self.id)
