@@ -45,3 +45,5 @@ venv
 .env
 .env-mysql
 py3env/*
+
+.ieda/*
